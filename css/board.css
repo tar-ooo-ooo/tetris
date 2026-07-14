@@ -1,0 +1,8 @@
+.board {
+    width: 395px;
+    height: 795px;
+    border: 10px solid #000;
+    background-color: #fff;
+    padding: 5px;
+    position: relative;
+}

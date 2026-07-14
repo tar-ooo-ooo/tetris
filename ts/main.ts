@@ -1,7 +1,7 @@
-import { Cell } from "./cell.js";
+import { Board } from "./board.js";
 
 class Main {
-  cell = new Cell(5, 10);
+  private board = new Board();
 }
 
 const main = new Main();

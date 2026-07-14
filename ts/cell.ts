@@ -5,7 +5,6 @@ export class Cell {
     private x: number,
     private y: number,
   ) {
-    this.createCell();
     this.render();
   }
 
@@ -14,8 +13,14 @@ export class Cell {
   };
 
   private render = () => {
-    this.element.style.left = `${this.x * 30}px`;
-    this.element.style.top = `${this.y * 30}px`;
+    this.createCell();
+
+    this.element.style.left = `${5 + this.x * 40}px`;
+    this.element.style.top = `${5 + this.y * 40}px`;
     document.body.appendChild(this.element);
+  };
+
+  public getCell = () => {
+    return this.element;
   };
 }
