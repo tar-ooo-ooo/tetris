@@ -1,4 +1,4 @@
-import { Cell } from "./cell.js";
+import { Cell } from "./cell";
 
 export class Board {
   private element = document.createElement("div");

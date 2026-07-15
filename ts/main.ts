@@ -1,4 +1,5 @@
-import { Board } from "./board.js";
+import { Board } from "./board";
+import "../css/index.css";
 
 class Main {
   private board = new Board();
