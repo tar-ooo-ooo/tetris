@@ -27,7 +27,7 @@ export abstract class BaseTetromino implements ITetromino {
       (location) =>
         new Cell(
           this.boundLocations.x + location.x,
-          this.boundLocations.y + location.y - this.localMinY,
+          this.boundLocations.y + location.y,
         ),
     );
   }

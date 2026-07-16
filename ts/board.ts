@@ -4,10 +4,12 @@ import { Tetromino } from "./tetromino/tetromino";
 export class Board {
   private element = document.createElement("div");
   private currentTetromino = Tetromino.create();
+  private gameLoop?: number;
 
   constructor() {
     this.render();
     this.bindEvents();
+    this.run();
   }
 
   private createBoard = () => {
@@ -58,5 +60,12 @@ export class Board {
         this.currentTetromino.move("down");
         this.renderCells();
     }
+  };
+
+  private run = () => {
+    this.gameLoop = window.setInterval(() => {
+      this.currentTetromino.move("down");
+      this.renderCells();
+    }, 1000);
   };
 }

@@ -17,7 +17,6 @@ export class Cell {
 
     this.element.style.left = `${5 + this.x * 40}px`;
     this.element.style.top = `${5 + this.y * 40}px`;
-    document.body.appendChild(this.element);
   };
 
   public getCell = () => {
