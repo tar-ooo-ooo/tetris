@@ -5,7 +5,7 @@ import { Cell } from "../cell";
 
 export class Teewee {
   public static create = () => {
-    const cells: HTMLDivElement[] = [];
+    const cells: Cell[] = [];
 
     const locations = [
       { x: 1, y: 0 },
@@ -14,9 +14,7 @@ export class Teewee {
       { x: 2, y: 1 },
     ];
 
-    for (let l of locations) {
-      cells.push(new Cell(l.x, l.y).getCell());
-    }
+    locations.map((l) => cells.push(new Cell(l.x, l.y)));
 
     return cells;
   };
