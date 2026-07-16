@@ -1,7 +1,7 @@
 import { ILocation } from "./interface/ILocations";
 
 export const getBoundary = (
-  boundLocations: ILocation,
+  boundLocation: ILocation,
   locations: ILocation[],
   valueType: "min" | "max",
   direction: "x" | "y",
@@ -9,24 +9,25 @@ export const getBoundary = (
   if (valueType === "min") {
     return (
       Math.min(...locations.map((location) => location[direction])) +
-      boundLocations[direction]
+      boundLocation[direction]
     );
   } else {
     return (
       Math.max(...locations.map((location) => location[direction])) +
-      boundLocations[direction]
+      boundLocation[direction]
     );
   }
 };
 
+// TODO 之後會改成判斷如果碰到邊界 + 其他方塊
 export const isInsideBoard = (
-  boundLocations: ILocation,
+  boundLocation: ILocation,
   locations: ILocation[],
 ): boolean => {
-  const minX = getBoundary(boundLocations, locations, "min", "x");
-  const maxX = getBoundary(boundLocations, locations, "max", "x");
-  const minY = getBoundary(boundLocations, locations, "min", "y");
-  const maxY = getBoundary(boundLocations, locations, "max", "y");
+  const minX = getBoundary(boundLocation, locations, "min", "x");
+  const maxX = getBoundary(boundLocation, locations, "max", "x");
+  const minY = getBoundary(boundLocation, locations, "min", "y");
+  const maxY = getBoundary(boundLocation, locations, "max", "y");
 
   return minX >= 0 && maxX <= 9 && minY >= 0 && maxY <= 19;
 };

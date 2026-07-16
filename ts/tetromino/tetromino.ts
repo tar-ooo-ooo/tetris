@@ -10,23 +10,23 @@ import { Teewee } from "./teewee";
 
 export class Tetromino {
   public static create = (): ITetromino => {
-    const index: Number = Math.floor(Math.random());
+    const index: Number = Math.floor(Math.random() * 7);
 
     switch (index) {
       case 0:
         return new BlueRick();
-      // case 1:
-      //   return ClevelandZ.create();
-      // case 2:
-      //   return Hero.create();
-      // case 3:
-      //   return OrangeRick.create();
-      // case 4:
-      //   return RhodeIslandZ.create();
-      // case 5:
-      //   return SmashBoy.create();
-      // case 6:
-      //   return Teewee.create();
+      case 1:
+        return new ClevelandZ();
+      case 2:
+        return new Hero();
+      case 3:
+        return new OrangeRick();
+      case 4:
+        return new RhodeIslandZ();
+      case 5:
+        return new SmashBoy();
+      case 6:
+        return new Teewee();
       default:
         throw new Error("Invalid tetromino index");
     }

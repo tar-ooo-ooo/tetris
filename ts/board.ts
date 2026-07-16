@@ -34,7 +34,7 @@ export class Board {
 
   private onKeyDown = (event: KeyboardEvent) => {
     switch (event.code) {
-      case "Space":
+      case "ArrowUp":
         event.preventDefault();
 
         this.currentTetromino.rotate();
@@ -52,6 +52,11 @@ export class Board {
         this.currentTetromino.move("right");
         this.renderCells();
         break;
+      case "ArrowDown":
+        event.preventDefault();
+
+        this.currentTetromino.move("down");
+        this.renderCells();
     }
   };
 }
