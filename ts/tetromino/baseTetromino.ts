@@ -1,10 +1,10 @@
 import { Cell } from "../cell";
 import { ILocation } from "../interface/ILocations";
 import { ITetromino } from "../interface/ITetromino";
-import { getBoundary, isInsideBoard } from "../utils";
+import { canMove, getBoundary } from "../utils";
 
 export abstract class BaseTetromino implements ITetromino {
-  protected boundLocations: ILocation = {
+  protected boundLocation: ILocation = {
     x: Math.floor(Math.random() * 2 + 2),
     y: 0,
   };
@@ -15,7 +15,7 @@ export abstract class BaseTetromino implements ITetromino {
     return this.rotations[this.rotationIndex];
   }
   protected get minY() {
-    return getBoundary(this.boundLocations, this.locations, "min", "y");
+    return getBoundary(this.boundLocation, this.locations, "min", "y");
   }
 
   protected get localMinY(): number {
@@ -26,16 +26,16 @@ export abstract class BaseTetromino implements ITetromino {
     return this.locations.map(
       (location) =>
         new Cell(
-          this.boundLocations.x + location.x,
-          this.boundLocations.y + location.y,
+          this.boundLocation.x + location.x,
+          this.boundLocation.y + location.y,
         ),
     );
   }
 
-  public move(direction: "left" | "right" | "down" | "drop"): boolean {
+  public move(direction: "left" | "right" | "down"): void {
     const nextBoundLocation: ILocation = {
-      x: this.boundLocations.x,
-      y: this.boundLocations.y,
+      x: this.boundLocation.x,
+      y: this.boundLocation.y,
     };
 
     switch (direction) {
@@ -48,67 +48,86 @@ export abstract class BaseTetromino implements ITetromino {
       case "down":
         nextBoundLocation.y++;
         break;
-      case "drop":
-        while (
-          isInsideBoard(
-            {
-              x: nextBoundLocation.x,
-              y: nextBoundLocation.y + 1,
-            },
-            this.locations,
-          )
-        ) {
-          nextBoundLocation.y++;
-        }
-        break;
     }
 
-    if (!isInsideBoard(nextBoundLocation, this.locations)) {
-      return false;
-    }
-    this.boundLocations = nextBoundLocation;
-    return true;
+    this.boundLocation = nextBoundLocation;
   }
 
-  public rotate(): void {
+  public rotate(occupiedLocations: ILocation[]): void {
     const nextRotationIndex = (this.rotationIndex + 1) % this.rotations.length;
 
-    const nextRotation = this.rotations[nextRotationIndex];
+    const nextRotations = this.rotations[nextRotationIndex];
+    const nextLocations = nextRotations.map((location) => ({
+      x: this.boundLocation.x + location.x,
+      y: this.boundLocation.y + location.y,
+    }));
 
-    if (isInsideBoard(this.boundLocations, nextRotation)) {
+    if (canMove(nextLocations, occupiedLocations)) {
       this.rotationIndex = nextRotationIndex;
       return;
     }
 
-    const nextMinX = getBoundary(this.boundLocations, nextRotation, "min", "x");
-    const nextMaxX = getBoundary(this.boundLocations, nextRotation, "max", "x");
-    const nextMaxY = getBoundary(this.boundLocations, nextRotation, "max", "y");
+    const nextMinX = getBoundary(this.boundLocation, nextRotations, "min", "x");
+    const nextMaxX = getBoundary(this.boundLocation, nextRotations, "max", "x");
+    const nextMaxY = getBoundary(this.boundLocation, nextRotations, "max", "y");
 
     let correctedBoundLocation: ILocation | null = null;
 
     if (nextMinX < 0) {
       correctedBoundLocation = {
-        x: this.boundLocations.x + Math.abs(nextMinX),
-        y: this.boundLocations.y,
+        x: this.boundLocation.x + Math.abs(nextMinX),
+        y: this.boundLocation.y,
       };
     } else if (nextMaxX > 9) {
       correctedBoundLocation = {
-        x: this.boundLocations.x - (nextMaxX - 9),
-        y: this.boundLocations.y,
+        x: this.boundLocation.x - (nextMaxX - 9),
+        y: this.boundLocation.y,
       };
     } else if (nextMaxY > 19) {
       correctedBoundLocation = {
-        x: this.boundLocations.x,
-        y: this.boundLocations.y - (nextMaxY - 19),
+        x: this.boundLocation.x,
+        y: this.boundLocation.y - (nextMaxY - 19),
       };
     }
 
+    const correctedLocations = correctedBoundLocation
+      ? nextRotations.map((location) => ({
+          x: correctedBoundLocation.x + location.x,
+          y: correctedBoundLocation.y + location.y,
+        }))
+      : [];
+
     if (
       correctedBoundLocation &&
-      isInsideBoard(correctedBoundLocation, nextRotation)
+      canMove(correctedLocations, occupiedLocations)
     ) {
-      this.boundLocations = correctedBoundLocation;
+      this.boundLocation = correctedBoundLocation;
       this.rotationIndex = nextRotationIndex;
     }
+  }
+
+  public getNextLocations(direction: "left" | "right" | "down"): ILocation[] {
+    const boundX = this.boundLocation.x;
+    const boundY = this.boundLocation.y;
+
+    return this.locations.map((location) => {
+      switch (direction) {
+        case "left":
+          return {
+            x: boundX + location.x - 1,
+            y: boundY + location.y,
+          };
+        case "right":
+          return {
+            x: boundX + location.x + 1,
+            y: boundY + location.y,
+          };
+        case "down":
+          return {
+            x: boundX + location.x,
+            y: boundY + location.y + 1,
+          };
+      }
+    });
   }
 }

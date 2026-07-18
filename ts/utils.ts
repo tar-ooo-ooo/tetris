@@ -31,3 +31,31 @@ export const isInsideBoard = (
 
   return minX >= 0 && maxX <= 9 && minY >= 0 && maxY <= 19;
 };
+
+export const canMove = (
+  nextLocations: ILocation[],
+  occupiedLocations: ILocation[],
+): boolean => {
+  return nextLocations.every((nextLocation) => {
+    // 判斷是否在 board 內
+    const isInsideBoard =
+      nextLocation.x >= 0 &&
+      nextLocation.x < 10 &&
+      nextLocation.y >= 0 &&
+      nextLocation.y < 20;
+
+    if (!isInsideBoard) return false;
+
+    const isOccupied = occupiedLocations.some(
+      (occupiedLocation) =>
+        occupiedLocation.x === nextLocation.x &&
+        occupiedLocation.y === nextLocation.y,
+    );
+
+    if (isOccupied) {
+      console.log("撞到", nextLocation);
+    }
+
+    return !isOccupied;
+  });
+};

@@ -1,5 +1,7 @@
 import { Cell } from "./cell";
+import { ILocation } from "./interface/ILocations";
 import { Tetromino } from "./tetromino/tetromino";
+import { canMove } from "./utils";
 
 export class Board {
   private element = document.createElement("div");
@@ -8,6 +10,16 @@ export class Board {
   private lockTimer?: number;
   private lockedCells: Cell[] = [];
   private interval: number = 1000;
+
+  private get occupiedLocations(): ILocation[] {
+    const occupiedLocations: ILocation[] = [];
+
+    for (let cell of this.lockedCells) {
+      occupiedLocations.push(cell.getLocation());
+    }
+
+    return occupiedLocations;
+  }
 
   constructor() {
     this.render();
@@ -47,50 +59,40 @@ export class Board {
       case "ArrowUp":
         event.preventDefault();
 
-        this.currentTetromino.rotate();
+        this.rotateCurrentTetromino();
         this.resetLockTimer();
         this.renderCells();
         break;
       case "ArrowLeft":
         event.preventDefault();
 
-        this.currentTetromino.move("left");
+        this.moveCurrentTetromino("left");
         this.resetLockTimer();
         this.renderCells();
         break;
       case "ArrowRight":
         event.preventDefault();
 
-        this.currentTetromino.move("right");
+        this.moveCurrentTetromino("right");
         this.resetLockTimer();
         this.renderCells();
         break;
       case "ArrowDown":
         event.preventDefault();
 
-        this.currentTetromino.move("down");
+        this.moveCurrentTetromino("down");
         this.resetLockTimer();
         this.renderCells();
         break;
       case "Space":
-        event.preventDefault();
-
-        this.currentTetromino.move("drop");
-        this.lockCurrentCells();
-
-        if (this.lockTimer) {
-          clearTimeout(this.lockTimer);
-          this.lockTimer = undefined;
-        }
-
-        this.generateTetromino();
+        this.dropCurrentTetromino();
         break;
     }
   };
 
   private run = () => {
     this.gameLoop = setInterval(() => {
-      const moved = this.currentTetromino.move("down");
+      const moved = this.moveCurrentTetromino("down");
       if (!moved && !this.lockTimer) {
         this.startLockTimer();
       }
@@ -131,5 +133,37 @@ export class Board {
   private generateTetromino = () => {
     this.currentTetromino = Tetromino.create();
     this.renderCells();
+  };
+
+  private rotateCurrentTetromino = () => {
+    this.currentTetromino.rotate(this.occupiedLocations);
+  };
+
+  private moveCurrentTetromino = (
+    direction: "left" | "right" | "down",
+  ): boolean => {
+    const nextLocations = this.currentTetromino.getNextLocations(direction);
+
+    console.log(nextLocations);
+    console.log(this.occupiedLocations);
+
+    if (!canMove(nextLocations, this.occupiedLocations)) {
+      return false;
+    }
+
+    this.currentTetromino.move(direction);
+    return true;
+  };
+
+  private dropCurrentTetromino = () => {
+    while (this.moveCurrentTetromino("down")) {}
+
+    if (this.lockTimer) {
+      clearTimeout(this.lockTimer);
+      this.lockTimer = undefined;
+    }
+
+    this.lockCurrentCells();
+    this.generateTetromino();
   };
 }

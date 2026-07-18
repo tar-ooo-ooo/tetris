@@ -1,3 +1,5 @@
+import { ILocation } from "./interface/ILocations";
+
 export class Cell {
   private element: HTMLDivElement = document.createElement("div");
 
@@ -21,5 +23,12 @@ export class Cell {
 
   public getCell = () => {
     return this.element;
+  };
+
+  public getLocation = (): ILocation => {
+    return {
+      x: this.x,
+      y: this.y,
+    };
   };
 }
