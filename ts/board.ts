@@ -1,5 +1,4 @@
 import { Cell } from "./cell";
-import { ITetromino } from "./interface/ITetromino";
 import { Tetromino } from "./tetromino/tetromino";
 
 export class Board {
