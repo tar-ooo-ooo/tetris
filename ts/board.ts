@@ -70,7 +70,22 @@ export class Board {
         event.preventDefault();
 
         this.currentTetromino.move("down");
+        this.resetLockTimer();
         this.renderCells();
+        break;
+      case "Space":
+        event.preventDefault();
+
+        this.currentTetromino.move("drop");
+        this.lockCurrentCells();
+
+        if (this.lockTimer) {
+          clearTimeout(this.lockTimer);
+          this.lockTimer = undefined;
+        }
+
+        this.generateTetromino();
+        break;
     }
   };
 
@@ -112,5 +127,10 @@ export class Board {
       this.lockTimer = undefined;
       this.renderCells();
     }, this.interval);
+  };
+
+  private generateTetromino = () => {
+    this.currentTetromino = Tetromino.create();
+    this.renderCells();
   };
 }

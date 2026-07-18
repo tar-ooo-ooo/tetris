@@ -32,18 +32,35 @@ export abstract class BaseTetromino implements ITetromino {
     );
   }
 
-  public move(direction: "left" | "right" | "down"): boolean {
+  public move(direction: "left" | "right" | "down" | "drop"): boolean {
     const nextBoundLocation: ILocation = {
       x: this.boundLocations.x,
       y: this.boundLocations.y,
     };
 
-    if (direction === "left") {
-      nextBoundLocation.x--;
-    } else if (direction === "right") {
-      nextBoundLocation.x++;
-    } else {
-      nextBoundLocation.y++;
+    switch (direction) {
+      case "left":
+        nextBoundLocation.x--;
+        break;
+      case "right":
+        nextBoundLocation.x++;
+        break;
+      case "down":
+        nextBoundLocation.y++;
+        break;
+      case "drop":
+        while (
+          isInsideBoard(
+            {
+              x: nextBoundLocation.x,
+              y: nextBoundLocation.y + 1,
+            },
+            this.locations,
+          )
+        ) {
+          nextBoundLocation.y++;
+        }
+        break;
     }
 
     if (!isInsideBoard(nextBoundLocation, this.locations)) {
