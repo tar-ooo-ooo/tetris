@@ -1,10 +1,12 @@
 import { Cell } from "./cell";
+import { ITetromino } from "./interface/ITetromino";
 import { Tetromino } from "./tetromino/tetromino";
 
 export class Board {
   private element = document.createElement("div");
   private currentTetromino = Tetromino.create();
   private gameLoop?: number;
+  private lockedCells: Cell[] = [];
 
   constructor() {
     this.render();
@@ -23,8 +25,13 @@ export class Board {
   private renderCells = () => {
     this.element.innerHTML = "";
 
-    for (let t of this.currentTetromino.create()) {
-      this.element.appendChild(t.getCell());
+    const cells: Cell[] = [
+      ...this.currentTetromino.create(),
+      ...this.lockedCells,
+    ];
+
+    for (const cell of cells) {
+      this.element.appendChild(cell.getCell());
     }
   };
 
@@ -64,8 +71,16 @@ export class Board {
 
   private run = () => {
     this.gameLoop = window.setInterval(() => {
-      this.currentTetromino.move("down");
+      const moved = this.currentTetromino.move("down");
+      if (!moved) {
+        this.lockCurrentCells();
+        this.currentTetromino = Tetromino.create();
+      }
       this.renderCells();
     }, 1000);
+  };
+
+  private lockCurrentCells = (): void => {
+    this.lockedCells.push(...this.currentTetromino.create());
   };
 }

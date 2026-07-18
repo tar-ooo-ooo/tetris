@@ -32,7 +32,7 @@ export abstract class BaseTetromino implements ITetromino {
     );
   }
 
-  public move(direction: "left" | "right" | "down") {
+  public move(direction: "left" | "right" | "down"): boolean {
     const nextBoundLocation: ILocation = {
       x: this.boundLocations.x,
       y: this.boundLocations.y,
@@ -47,9 +47,10 @@ export abstract class BaseTetromino implements ITetromino {
     }
 
     if (!isInsideBoard(nextBoundLocation, this.locations)) {
-      return;
+      return false;
     }
     this.boundLocations = nextBoundLocation;
+    return true;
   }
 
   public rotate(): void {
